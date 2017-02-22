@@ -10,21 +10,26 @@ import java.lang.Math;
 class perceptron {
   public static void main(String[] args){
     // declare file variables
-    String train_string, test_string;
+    String train_string, test_string, dict_string;
     String error;
     double perceptron_error = 0;
     double voted_error = 0;
     double avg_error = 0;
     train_string = args[0];
     test_string = args[1];
+    dict_string = args[2];
+
 
     File train_file = new File(train_string);
     File test_file = new File(test_string);
+    File dict_file = new File(dict_string);
     LinkedList<int[]> train_list  = new LinkedList<int[]>();
     LinkedList<int[]> test_list = new LinkedList<int[]>();
     LinkedList<int[]> w_list = new LinkedList<int[]>();
+    LinkedList<String> dict_list = new LinkedList<String>();
     train_list = input_file2(train_file);
     test_list = input_file2(test_file);
+    dict_list = input_dictionary(dict_file);
     int [] w = new int[train_list.get(0).length];
     int [] w_init = new int[train_list.get(0).length];
     int [] w_avg = new int[train_list.get(0).length];
@@ -63,7 +68,9 @@ class perceptron {
       w_init = w;
     }
 
-  }
+    determine_min_max(w_avg, dict_list);
+  } // end of main
+
   public static int [] perceptron_algo(LinkedList<int[]> list, int [] w_init){
     int [] w;
     int [] x;
@@ -249,6 +256,30 @@ class perceptron {
     return list;
   }
 
+  public static LinkedList<String> input_dictionary(File file){
+    String input_line;
+    LinkedList<String> dict = new LinkedList<String>();
+
+    try
+    {
+      FileReader fileReader = new FileReader(file);
+      BufferedReader buffer = new BufferedReader(fileReader);
+      input_line = buffer.readLine();
+
+      while (input_line != null)
+      {
+        dict.add(input_line);
+        input_line = buffer.readLine();
+      }
+    }
+    catch (IOException e)
+    {
+          throw new IllegalArgumentException("Unable to load file", e);
+    }
+
+    return dict;
+  }
+
   public static double perceptron_error(LinkedList<int[]> list, int[] w){
     int mistakes = 0;
     int total = 0;
@@ -358,5 +389,63 @@ class perceptron {
     }
 
     return w_total;
+  }
+
+  public static void determine_min_max(int[] w, LinkedList<String> dict){
+    int [] vals = new int[w.length - 1];
+    int [] sorted = new int[w.length - 1];
+    int [] min_max = new int[6];
+    int index = 0;
+    HashMap<Integer, Integer> index_dict = new HashMap<Integer, Integer>();
+
+    for (int i = 0; i < vals.length; i++){
+      vals[i] = w[i];
+      index_dict.put(vals[i], i);
+    }
+
+    sorted = selection_sort(vals);
+
+    for (int i = 0; i < 3; i++){
+      min_max[i] = sorted[i];
+      min_max[min_max.length - 1 - i] = sorted[sorted.length - 1 - i];
+    }
+
+    System.out.format("%32s%n", "Max Word / Coordinate (In Descnding Order)");
+    index = index_dict.get(min_max[5]);
+    System.out.format("%32s%d%n", dict.get(index), index);
+    index = index_dict.get(min_max[4]);
+    System.out.format("%32s%d%n", dict.get(index), index);
+    index = index_dict.get(min_max[3]);
+    System.out.format("%32s%d%n", dict.get(index), index);
+
+    System.out.format("%32s%n", "Min Word / Coordinate (In Descnding Order)");
+    index = index_dict.get(min_max[2]);
+    System.out.format("%32s%d%n", dict.get(index), index);
+    index = index_dict.get(min_max[1]);
+    System.out.format("%32s%d%n", dict.get(index), index);
+    index = index_dict.get(min_max[0]);
+    System.out.format("%32s%d%n", dict.get(index), index);
+    return;
+  }
+
+  public static int[] selection_sort (int[] arr)
+  {
+
+    for (int i = 0; i < arr.length - 1; i++)
+    {
+      int index = i;
+      for (int j = i + 1; j < arr.length; j++)
+      {
+        if (arr[j] < arr[index])
+        {
+          index = j;
+        }
+      }
+        int smallerNum = arr[index];
+        arr[index] = arr[i];
+        arr[i] = smallerNum;
+    }
+
+    return arr;
   }
 }
