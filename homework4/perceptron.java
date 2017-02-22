@@ -11,21 +11,24 @@ class perceptron {
   public static void main(String[] args){
     // declare file variables
     String train_string, test_string;
+    String error;
     double perceptron_error = 0;
     double voted_error = 0;
     double avg_error = 0;
     train_string = args[0];
-    //test_string = args[1];
+    test_string = args[1];
 
     File train_file = new File(train_string);
-    //File test_file = new File(test_string);
+    File test_file = new File(test_string);
     LinkedList<int[]> train_list  = new LinkedList<int[]>();
     LinkedList<int[]> test_list = new LinkedList<int[]>();
     LinkedList<int[]> w_list = new LinkedList<int[]>();
     train_list = input_file2(train_file);
+    test_list = input_file2(test_file);
     int [] w = new int[train_list.get(0).length];
     int [] w_init = new int[train_list.get(0).length];
     int [] w_avg = new int[train_list.get(0).length];
+    error = "TRAINING ERROR";
 
     for (int i = 1; i < 5; i++){
       w = perceptron_algo(train_list, w_init);
@@ -34,6 +37,7 @@ class perceptron {
       voted_error = voted_error(train_list, w_list);
       w_avg = determine_average_w(w_list);
       avg_error = average_error(train_list, w_avg);
+      System.out.format("%32s%n", error);
       System.out.format("%32s%d%n", "Pass # ", i);
       System.out.format("%32s%7f%n", "Peceptron Error: ", perceptron_error);
       System.out.format("%32s%7f%n", "Voted Error: ", voted_error);
@@ -41,8 +45,23 @@ class perceptron {
       System.out.format("%32s%n", "----------------");
       w_init = w;
     }
-    //print_list(train_list);
-    //test_list = input_file(test_string);
+    error = "TEST ERROR";
+
+    for (int i = 1; i < 5; i++){
+      w = perceptron_algo(test_list, w_init);
+      w_list = voted_algo(test_list, w_init);
+      perceptron_error = perceptron_error(test_list, w);
+      voted_error = voted_error(test_list, w_list);
+      w_avg = determine_average_w(w_list);
+      avg_error = average_error(test_list, w_avg);
+      System.out.format("%32s%n", error);
+      System.out.format("%32s%d%n", "Pass # ", i);
+      System.out.format("%32s%7f%n", "Peceptron Error: ", perceptron_error);
+      System.out.format("%32s%7f%n", "Voted Error: ", voted_error);
+      System.out.format("%32s%7f%n", "Average Error: ", avg_error);
+      System.out.format("%32s%n", "----------------");
+      w_init = w;
+    }
 
   }
   public static int [] perceptron_algo(LinkedList<int[]> list, int [] w_init){
