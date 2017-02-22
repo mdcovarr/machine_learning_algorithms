@@ -258,19 +258,20 @@ class perceptron {
     int sum = 0;
     double total_error = 0;
     int predict = 0;
-    int [] x = new int[w_list.get(0).length];
-    int [] w = new int[w_list.get(0).length];
+    int [] x = new int[list.get(0).length];
+    int [] w = new int[list.get(0).length];
 
     for (int i = 0; i < list.size(); i++){
       x = list.get(i);
+
       for (int j = 0; j < w_list.size(); j++){
-        w = list.get(j);
+        w = w_list.get(j);
         val = dot_product(w, x);
         if (val < 0){
-          sum = sum + (-1 * w[w.length - 1]);
+          sum = sum - w[w.length - 1];
         }
         else{
-          sum = sum + (1 * w[w.length - 1]);
+          sum = sum + w[w.length - 1];
         }
       }
       if (sum < 0){
@@ -283,6 +284,7 @@ class perceptron {
         mistakes++;
       }
       total++;
+      sum = 0;
     }
     total_error = (mistakes * 1.0)/total;
     return total_error;
