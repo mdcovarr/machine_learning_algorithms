@@ -33,6 +33,7 @@ class perceptron {
     int [] w = new int[train_list.get(0).length];
     int [] w_init = new int[train_list.get(0).length];
     int [] w_avg = new int[train_list.get(0).length];
+    int [] third_avg = new int[train_list.get(0).length];
     error = "TRAINING ERROR";
 
     for (int i = 1; i < 5; i++){
@@ -41,6 +42,11 @@ class perceptron {
       perceptron_error = perceptron_error(train_list, w);
       voted_error = voted_error(train_list, w_list);
       w_avg = determine_average_w(w_list);
+
+      if (i == 4){
+        third_avg = w_avg;
+      }
+
       avg_error = average_error(train_list, w_avg);
       System.out.format("%32s%n", error);
       System.out.format("%32s%d%n", "Pass # ", i);
@@ -50,6 +56,7 @@ class perceptron {
       System.out.format("%32s%n", "----------------");
       w_init = w;
     }
+    determine_min_max(third_avg, dict_list);
     error = "TEST ERROR";
 
     for (int i = 1; i < 5; i++){
@@ -58,6 +65,11 @@ class perceptron {
       perceptron_error = perceptron_error(test_list, w);
       voted_error = voted_error(test_list, w_list);
       w_avg = determine_average_w(w_list);
+
+      if (i == 4){
+        third_avg = w_avg;
+      }
+
       avg_error = average_error(test_list, w_avg);
       System.out.format("%32s%n", error);
       System.out.format("%32s%d%n", "Pass # ", i);
@@ -68,7 +80,7 @@ class perceptron {
       w_init = w;
     }
 
-    determine_min_max(w_avg, dict_list);
+    determine_min_max(third_avg, dict_list);
   } // end of main
 
   public static int [] perceptron_algo(LinkedList<int[]> list, int [] w_init){
