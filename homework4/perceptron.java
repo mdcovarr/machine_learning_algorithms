@@ -25,14 +25,22 @@ class perceptron {
     train_list = input_file2(train_file);
     int [] w = new int[train_list.get(0).length];
     int [] w_init = new int[train_list.get(0).length];
-    w = perceptron_algo(train_list, w_init);
-    w_list = voted_algo(train_list, w_init);
-    perceptron_error = perceptron_error(train_list, w);
-    voted_error = voted_error(train_list, w_list);
-    avg_error = average_error(train_list, w_list);
-    System.out.format("%32s%7f%n", "Peceptron Error: ", perceptron_error);
-    System.out.format("%32s%7f%n", "Voted Error: ", voted_error);
-    System.out.format("%32s%7f%n", "Average Error: ", avg_error);
+    int [] w_avg = new int[train_list.get(0).length];
+
+    for (int i = 1; i < 5; i++){
+      w = perceptron_algo(train_list, w_init);
+      w_list = voted_algo(train_list, w_init);
+      perceptron_error = perceptron_error(train_list, w);
+      voted_error = voted_error(train_list, w_list);
+      w_avg = determine_average_w(w_list);
+      avg_error = average_error(train_list, w_avg);
+      System.out.format("%32s%d%n", "Pass # ", i);
+      System.out.format("%32s%7f%n", "Peceptron Error: ", perceptron_error);
+      System.out.format("%32s%7f%n", "Voted Error: ", voted_error);
+      System.out.format("%32s%7f%n", "Average Error: ", avg_error);
+      System.out.format("%32s%n", "----------------");
+      w_init = w;
+    }
     //print_list(train_list);
     //test_list = input_file(test_string);
 
@@ -290,23 +298,13 @@ class perceptron {
     return total_error;
   }
 
-  public static double average_error(LinkedList<int[]> list, LinkedList<int[]> w_list){
+  public static double average_error(LinkedList<int[]> list, int[] w_total){
     double average_error = 0;
-    int [] w_curr = new int[list.get(0).length];
-    int [] w_total = new int[list.get(0).length];
-    int [] scaled = new int[list.get(0).length];
     int [] x = new int[list.get(0).length];
     int val = 0;
     int predict = 0;
     int mistakes = 0;
     int total = 0;
-
-
-    for (int i = 0; i < w_list.size(); i++){
-        w_curr = w_list.get(i);
-        scaled = scale_vector(w_curr, w_curr[w_curr.length - 1]);
-        w_total = add_vector(w_total, scaled, 1);
-    }
 
     for (int j = 0; j < list.size(); j++){
       x = list.get(j);
@@ -327,5 +325,19 @@ class perceptron {
 
     average_error = (mistakes * 1.0)/total;
     return average_error;
+  }
+
+  public static int [] determine_average_w(LinkedList<int[]> w_list){
+    int [] w_curr = new int[w_list.get(0).length];
+    int [] scaled = new int[w_list.get(0).length];
+    int [] w_total = new int[w_list.get(0).length];
+
+    for (int i = 0; i < w_list.size(); i++){
+        w_curr = w_list.get(i);
+        scaled = scale_vector(w_curr, w_curr[w_curr.length - 1]);
+        w_total = add_vector(w_total, scaled, 1);
+    }
+
+    return w_total;
   }
 }
