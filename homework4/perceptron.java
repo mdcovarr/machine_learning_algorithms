@@ -57,6 +57,7 @@ class perceptron {
       w_init = w;
     }
     determine_min_max(third_avg, dict_list);
+    System.out.println();
     error = "TEST ERROR";
 
     for (int i = 1; i < 5; i++){
@@ -65,11 +66,6 @@ class perceptron {
       perceptron_error = perceptron_error(test_list, w);
       voted_error = voted_error(test_list, w_list);
       w_avg = determine_average_w(w_list);
-
-      if (i == 4){
-        third_avg = w_avg;
-      }
-
       avg_error = average_error(test_list, w_avg);
       System.out.format("%32s%n", error);
       System.out.format("%32s%d%n", "Pass # ", i);
@@ -80,7 +76,6 @@ class perceptron {
       w_init = w;
     }
 
-    determine_min_max(third_avg, dict_list);
   } // end of main
 
   public static int [] perceptron_algo(LinkedList<int[]> list, int [] w_init){
