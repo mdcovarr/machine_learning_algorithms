@@ -371,10 +371,10 @@ public class id3Tree
         {
           index = j;
         }
-        int smallerNum = arr[index];
-        arr[index] = arr[i];
-        arr[i] = smallerNum;
       }
+      int smallerNum = arr[index];
+      arr[index] = arr[i];
+      arr[i] = smallerNum;
     }
 
     return arr;
