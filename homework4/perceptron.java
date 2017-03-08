@@ -51,7 +51,7 @@ class perceptron {
       avg_error = average_error(train_list, w_avg);
       System.out.format("%32s%n", error);
       System.out.format("%32s%d%n", "Pass # ", i);
-      System.out.format("%32s%7f%n", "Peceptron Error: ", perceptron_error);
+      System.out.format("%32s%7f%n", "Perceptron Error: ", perceptron_error);
       System.out.format("%32s%7f%n", "Voted Error: ", voted_error);
       System.out.format("%32s%7f%n", "Average Error: ", avg_error);
       System.out.format("%32s%n", "----------------");
@@ -70,7 +70,7 @@ class perceptron {
       avg_error = average_error(test_list, w_avg);
       System.out.format("%32s%n", error);
       System.out.format("%32s%d%n", "Pass # ", i);
-      System.out.format("%32s%7f%n", "Peceptron Error: ", perceptron_error);
+      System.out.format("%32s%7f%n", "Perceptron Error: ", perceptron_error);
       System.out.format("%32s%7f%n", "Voted Error: ", voted_error);
       System.out.format("%32s%7f%n", "Average Error: ", avg_error);
       System.out.format("%32s%n", "----------------");
@@ -214,7 +214,7 @@ class perceptron {
 
       for (int j = 0; j < n.length; j++)
       {
-        System.out.format("%d%s", n[j], " ");
+        System.out.format("%3d%s", n[j], " ");
       }
       System.out.print("\n");
       count++;
