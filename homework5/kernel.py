@@ -4,8 +4,7 @@ from pprint import pprint
 
 class Kernel:
 
-    def __init__(self, dictionary, training_data):
-        self.string_dict = dictionary
+    def __init__(self, training_data):
         self.train_data = training_data
 
     def occurrences(self, s1, substring):
@@ -26,9 +25,11 @@ class Kernel:
 
             if val <= 0:
                 w_t.append(i)
+
             i += 1
-        print w_t[:]
-        print('\n')
+
+        #print w_t[:]
+        #print('\n')
         print(len(w_t))
 
     def dot_product(self, w_t, x_t, y_t, p):
@@ -39,24 +40,24 @@ class Kernel:
         total_sum = total_sum * y_t
         return total_sum
 
+
     def string_kernel(self, string_s, string_t, y_s, y_t, p):
         i = 0
-        self.string_dict = dict.fromkeys(self.string_dict, 0)
-
+        string_dict = dict()
         while i < len(string_s) - p + 1:
             # let v = s1[i]
             v = string_s[i: i+p]
             # check for double counting first
-            if self.string_dict[v] == 0:
-                # checking if v is a substring t
+            if v not in string_dict.keys():
                 a = self.occurrences(string_s, v)
                 b = self.occurrences(string_t, v)
                 if a > 0 and b > 0:
-                    self.string_dict[v] = a * b
+                    string_dict[v] = a * b
             i += 1
-        # just a print statement to help debug
-        val = sum(self.string_dict.itervalues()) * y_s
 
+        val = sum(string_dict.itervalues()) * y_s
+        #for key, value in string_dict.iteritems():
+        #    print key, value
         return val
 
 if __name__ == "__main__":
@@ -66,18 +67,5 @@ if __name__ == "__main__":
     training_data = np.array([line.rstrip().split(" ") for line in train_file])
     train_file.close
 
-    s = open('hw5train.txt', 'r').read()
-    # create the dictionary
-    string_set = set(s)
-    string_set.remove('\n')
-    string_set.remove(' ')
-    string_set.remove('-')
-    string_set.remove('+')
-    string_set.remove('1')
-    dictionary = dict.fromkeys(string_set, 0)
-
-    #k = Kernel(dictionary, training_data)
-    #k.perceptron()
-    #str = 'hello world'
-    #print(str[2:4])
-
+    k = Kernel(training_data)
+    k.perceptron()
