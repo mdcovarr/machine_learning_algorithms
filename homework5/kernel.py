@@ -71,8 +71,11 @@ class Kernel:
     def string_kernel(self, dict_s, dict_t, string_s, string_t, y_s, y_t, p):
         val = 0
         i = 0
+        v_set = set()
+
         while i < len(string_s) - p + 1:
             v = string_s[i: i+p]
+            v_set.add(v)
             dict_s[v] += 1
             i += 1
         i = 0
@@ -80,10 +83,20 @@ class Kernel:
             v = string_t[i: i+p]
             dict_t[v] += 1
             i += 1
+        i = 0
+
+        for v in v_set:
+            a = dict_s[v]
+            b = dict_t[v]
+            val += (a * b)
+
+        '''
         for v in dict_s.iterkeys():
             a = dict_s[v]
             b = dict_t[v]
             val += (a * b)
+        '''
+
         val *= y_s
 
         return val
@@ -99,8 +112,7 @@ class Kernel:
                 string_set.add(v)
                 i += 1
         dictionary = dict.fromkeys(string_set, 0)
-        #for key, value in dictionary.iteritems():
-        #    print key, value
+        print len(dictionary)
         return dictionary
 
 if __name__ == "__main__":
