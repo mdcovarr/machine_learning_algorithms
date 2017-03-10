@@ -12,10 +12,10 @@ class Kernel:
         self.w_t = []
 
     def perceptron_algo(self, test_data):
-        p = 3
+        p = 4
         i = 0
         val = 0
-        dict_s = self.master_dict(p)
+        dict_s = self.master_dict(p, test_data)
         dict_t = dict_s
         predict = 0
         error = 0
@@ -39,11 +39,11 @@ class Kernel:
         print(total_error)
 
     def determine_w(self):
-        p = 3
+        p = 4
         i = 0
         y_t = 0
         val = 0
-        dict_s = self.master_dict(p)
+        dict_s = self.master_dict(p, self.train_data)
         dict_t = dict_s
 
         while i < len(self.train_data[:, 0]):
@@ -90,22 +90,24 @@ class Kernel:
             b = dict_t[v]
             val += (a * b)
 
-        '''
-        for v in dict_s.iterkeys():
-            a = dict_s[v]
-            b = dict_t[v]
-            val += (a * b)
-        '''
 
         val *= y_s
 
         return val
 
-    def master_dict(self, p):
+    def master_dict(self, p, test_data):
         # need to make a dictionary with all possible strings of size p
         string_set = set()
         train_strings = self.train_data[:, 0]
+        test_strings = test_data[:, 0]
+
         for curr_string in train_strings:
+            i = 0
+            while i < len(curr_string) - p + 1:
+                v = curr_string[i: i+p]
+                string_set.add(v)
+                i += 1
+        for curr_string in test_strings:
             i = 0
             while i < len(curr_string) - p + 1:
                 v = curr_string[i: i+p]
@@ -122,6 +124,10 @@ if __name__ == "__main__":
     training_data = np.array([line.rstrip().split(" ") for line in train_file])
     train_file.close
 
+    test_file = open('hw5test.txt', 'r')
+    test_data = np.array([line.rstrip().split(" ") for line in test_file])
+    test_file.close
+
     k = Kernel(training_data)
     k.determine_w()
-    k.perceptron_algo(training_data)
+    k.perceptron_algo(test_data)
