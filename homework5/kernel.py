@@ -1,64 +1,107 @@
+# Michael Covarrubias
+# PID#: A12409694
+# Naveen Ketagoda
+# PID#: A10773459
+
 import numpy as np
-import re
-from pprint import pprint
 
 class Kernel:
 
     def __init__(self, training_data):
         self.train_data = training_data
+        self.w_t = []
 
-    def occurrences(self, s1, substring):
-        return len(re.findall('(?={0})'.format(re.escape(substring)), s1))
-
-    def perceptron(self):
-        p = 2
+    def perceptron_algo(self, test_data):
+        p = 3
         i = 0
-        w_t = []
-        w_init = ''
+        val = 0
+        dict_s = self.master_dict(p)
+        dict_t = dict_s
+        predict = 0
+        error = 0
+        count = 0
+
+        while i < len(test_data[:, 0]):
+            x_t = test_data[i, 0]
+            y_t = int(test_data[i, 1])
+            val = self.dot_product(dict_s, dict_t, self.w_t, x_t, y_t, p)
+
+            if val <= 0:
+                predict = -1
+            else:
+                predict = 1
+            if predict != y_t:
+                error += 1
+            count += 1
+            i += 1
+
+        total_error = (1.0 * error) / (1.0 * count)
+        print(total_error)
+
+    def determine_w(self):
+        p = 3
+        i = 0
         y_t = 0
         val = 0
+        dict_s = self.master_dict(p)
+        dict_t = dict_s
 
         while i < len(self.train_data[:, 0]):
             x_t = self.train_data[i, 0]
             y_t = int(self.train_data[i, 1])
-            val = self.dot_product(w_t, x_t, y_t, p)
+            val = self.dot_product(dict_s, dict_t, self.w_t, x_t, y_t, p)
+            # added new code val = val * y_t
+            val = val * y_t
 
             if val <= 0:
-                w_t.append(i)
-
+                self.w_t.append(i)
             i += 1
 
-        #print w_t[:]
-        #print('\n')
-        print(len(w_t))
-
-    def dot_product(self, w_t, x_t, y_t, p):
+    def dot_product(self, dict_s, dict_t, w_t, x_t, y_t, p):
         total_sum = 0
 
         for i in w_t:
-            total_sum += self.string_kernel(self.train_data[i, 0], x_t, int(self.train_data[i, 1]), y_t, p)
-        total_sum = total_sum * y_t
+            dict_s = dict.fromkeys(dict_s, 0)
+            dict_t = dict.fromkeys(dict_t, 0)
+            total_sum += self.string_kernel(dict_s, dict_t, self.train_data[i, 0], x_t, int(self.train_data[i, 1]), y_t, p)
+        #total_sum = total_sum * y_t
+
         return total_sum
 
-
-    def string_kernel(self, string_s, string_t, y_s, y_t, p):
+    def string_kernel(self, dict_s, dict_t, string_s, string_t, y_s, y_t, p):
+        val = 0
         i = 0
-        string_dict = dict()
         while i < len(string_s) - p + 1:
-            # let v = s1[i]
             v = string_s[i: i+p]
-            # check for double counting first
-            if v not in string_dict.keys():
-                a = self.occurrences(string_s, v)
-                b = self.occurrences(string_t, v)
-                if a > 0 and b > 0:
-                    string_dict[v] = a * b
+            dict_s[v] += 1
             i += 1
+        i = 0
+        while i < len(string_t) - p + 1:
+            v = string_t[i: i+p]
+            dict_t[v] += 1
+            i += 1
+        for v in dict_s.iterkeys():
+            a = dict_s[v]
+            b = dict_t[v]
+            val += (a * b)
+        val *= y_s
 
-        val = sum(string_dict.itervalues()) * y_s
-        #for key, value in string_dict.iteritems():
-        #    print key, value
         return val
+
+    def master_dict(self, p):
+        # need to make a dictionary with all possible strings of size p
+        string_set = set()
+        train_strings = self.train_data[:, 0]
+        for curr_string in train_strings:
+            i = 0
+            while i < len(curr_string) - p + 1:
+                v = curr_string[i: i+p]
+                string_set.add(v)
+                i += 1
+        dictionary = dict.fromkeys(string_set, 0)
+        #for key, value in dictionary.iteritems():
+        #    print key, value
+        return dictionary
 
 if __name__ == "__main__":
 
@@ -68,4 +111,5 @@ if __name__ == "__main__":
     train_file.close
 
     k = Kernel(training_data)
-    k.perceptron()
+    k.determine_w()
+    k.perceptron_algo(training_data)
