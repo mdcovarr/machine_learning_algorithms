@@ -4,6 +4,7 @@
 # PID#: A10773459
 
 import numpy as np
+master_dictionary = dict()
 
 class Kernel:
 
@@ -12,10 +13,12 @@ class Kernel:
         self.w_t = []
 
     def perceptron_algo(self, test_data):
-        p = 2
+        p = 4
         i = 0
         val = 0
-        dict_s = self.master_dict(p, test_data)
+        #dict_s = self.master_dict(p, test_data)
+        #dict_t = dict_s
+        dict_s = master_dictionary
         dict_t = dict_s
         predict = 0
         error = 0
@@ -38,12 +41,12 @@ class Kernel:
         total_error = (1.0 * error) / (1.0 * count)
         print(total_error)
 
-    def determine_w(self):
-        p = 2
+    def determine_w(self, test_data):
+        p = 4
         i = 0
         y_t = 0
         val = 0
-        dict_s = self.master_dict(p, self.train_data)
+        dict_s = self.master_dict(p, test_data)
         dict_t = dict_s
 
         while i < len(self.train_data[:, 0]):
@@ -88,10 +91,10 @@ class Kernel:
         for v in v_set:
             a = dict_s[v]
             b = dict_t[v]
-            temp = a * b
-            if temp > 0:
-                val += 1
-            #val += (a * b)
+            #temp = a * b
+            #if temp > 0:
+            #    val += 1
+            val += (a * b)
 
 
         val *= y_s
@@ -100,6 +103,7 @@ class Kernel:
 
     def master_dict(self, p, test_data):
         # need to make a dictionary with all possible strings of size p
+        global master_dictionary
         string_set = set()
         train_strings = self.train_data[:, 0]
         test_strings = test_data[:, 0]
@@ -116,9 +120,11 @@ class Kernel:
                 v = curr_string[i: i+p]
                 string_set.add(v)
                 i += 1
-        dictionary = dict.fromkeys(string_set, 0)
-        print len(dictionary)
-        return dictionary
+        #dictionary = dict.fromkeys(string_set, 0)
+        #print len(dictionary)
+        #return dictionary
+        master_dictionary = dict.fromkeys(string_set, 0)
+        return master_dictionary
 
 if __name__ == "__main__":
 
@@ -132,5 +138,6 @@ if __name__ == "__main__":
     test_file.close
 
     k = Kernel(training_data)
-    k.determine_w()
+    #k.determine_w()
+    k.determine_w(training_data)
     k.perceptron_algo(training_data)
