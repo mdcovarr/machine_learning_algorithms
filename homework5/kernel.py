@@ -12,7 +12,7 @@ class Kernel:
         self.w_t = []
 
     def perceptron_algo(self, test_data):
-        p = 4
+        p = 2
         i = 0
         val = 0
         dict_s = self.master_dict(p, test_data)
@@ -39,7 +39,7 @@ class Kernel:
         print(total_error)
 
     def determine_w(self):
-        p = 4
+        p = 2
         i = 0
         y_t = 0
         val = 0
@@ -88,7 +88,10 @@ class Kernel:
         for v in v_set:
             a = dict_s[v]
             b = dict_t[v]
-            val += (a * b)
+            temp = a * b
+            if temp > 0:
+                val += 1
+            #val += (a * b)
 
 
         val *= y_s
@@ -130,4 +133,4 @@ if __name__ == "__main__":
 
     k = Kernel(training_data)
     k.determine_w()
-    k.perceptron_algo(test_data)
+    k.perceptron_algo(training_data)
