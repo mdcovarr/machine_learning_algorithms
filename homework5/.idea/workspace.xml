@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cddb1f74-1247-4878-b8fb-ab79f2eef5ae" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel.py" afterPath="$PROJECT_DIR$/kernel.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -12,7 +13,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/homework5$kernel.coverage" NAME="kernel Coverage Results" MODIFIED="1489170719994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/homework5$kernel.coverage" NAME="kernel Coverage Results" MODIFIED="1489172797866" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -34,8 +35,8 @@
       <file leaf-file-name="kernel.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/kernel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="63" column="18" lean-forward="true" selection-start-line="63" selection-start-column="18" selection-end-line="63" selection-end-column="18" />
+            <state relative-caret-position="165">
+              <caret line="11" column="39" lean-forward="true" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -479,8 +480,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/kernel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="63" column="18" lean-forward="true" selection-start-line="63" selection-start-column="18" selection-end-line="63" selection-end-column="18" />
+        <state relative-caret-position="165">
+          <caret line="11" column="39" lean-forward="true" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
           <folding />
         </state>
       </provider>

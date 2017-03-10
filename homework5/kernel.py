@@ -15,11 +15,9 @@ class Kernel:
         self.dict_t = dict()
 
     def perceptron_algo(self, test_data):
-        p = 2
+        p = 5
         i = 0
         val = 0
-        #dict_s = self.master_dict(p, test_data)
-        #dict_t = dict_s
         dict_s = master_dictionary
         dict_t = dict_s
         predict = 0
@@ -44,7 +42,7 @@ class Kernel:
         print(total_error)
 
     def determine_w(self, test_data):
-        p = 2
+        p = 5
         i = 0
         y_t = 0
         val = 0
@@ -55,7 +53,6 @@ class Kernel:
             x_t = self.train_data[i, 0]
             y_t = int(self.train_data[i, 1])
             val = self.dot_product(dict_s, dict_t, self.w_t, x_t, y_t, p)
-            # added new code val = val * y_t
             val = val * y_t
 
             if val <= 0:
@@ -67,18 +64,16 @@ class Kernel:
         total_sum = 0
         i = 0
         dict_t = dict.fromkeys(dict_t, 0)
-        ###
+
         while i < len(x_t) - p + 1:
             v = x_t[i: i+p]
             dict_t[v] += 1
             i += 1
-        ###
+
         for i in w_t:
-            #dict_s = dict.fromkeys(dict_s, 0)
-            #dict_t = dict.fromkeys(dict_t, 0)
             dict_s = self.all_dicts[i]
             total_sum += self.string_kernel(dict_s, dict_t, self.train_data[i, 0], x_t, int(self.train_data[i, 1]), y_t, p)
-        #total_sum = total_sum * y_t
+
         self.dict_t = dict_t
         return total_sum
 
@@ -90,24 +85,15 @@ class Kernel:
         while i < len(string_s) - p + 1:
             v = string_s[i: i+p]
             v_set.add(v)
-            #dict_s[v] += 1
+
             i += 1
-        '''
-        i = 0
-        while i < len(string_t) - p + 1:
-            v = string_t[i: i+p]
-            dict_t[v] += 1
-            i += 1
-        i = 0
-        '''
+
         for v in v_set:
             a = dict_s[v]
             b = dict_t[v]
-            #temp = a * b
-            #if temp > 0:
-            #    val += 1
-            val += (a * b)
-
+            temp = a * b
+            if temp > 0:
+                val += 1
 
         val *= y_s
 
@@ -132,9 +118,7 @@ class Kernel:
                 v = curr_string[i: i+p]
                 string_set.add(v)
                 i += 1
-        #dictionary = dict.fromkeys(string_set, 0)
-        #print len(dictionary)
-        #return dictionary
+
         master_dictionary = dict.fromkeys(string_set, 0)
         return master_dictionary
 
@@ -150,6 +134,5 @@ if __name__ == "__main__":
     test_file.close
 
     k = Kernel(training_data)
-    #k.determine_w()
-    k.determine_w(training_data)
-    k.perceptron_algo(training_data)
+    k.determine_w(test_data)
+    k.perceptron_algo(test_data)
