@@ -4,6 +4,7 @@
 # PID#: A10773459
 
 import numpy as np
+import heapq
 master_dictionary = dict()
 
 class Kernel:
@@ -13,6 +14,7 @@ class Kernel:
         self.w_t = []
         self.all_dicts = dict()
         self.dict_t = dict()
+        self.max_set = set()
 
     def perceptron_algo(self, test_data):
         p = 5
@@ -91,9 +93,11 @@ class Kernel:
         for v in v_set:
             a = dict_s[v]
             b = dict_t[v]
-            temp = a * b
-            if temp > 0:
-                val += 1
+            val += (a * b)
+            self.max_set.add(a)
+            #temp = a * b
+            #if temp > 0:
+            #    val += 1
 
         val *= y_s
 
@@ -122,6 +126,25 @@ class Kernel:
         master_dictionary = dict.fromkeys(string_set, 0)
         return master_dictionary
 
+    def determine_max_values(self):
+        max_vals = heapq.nlargest(2, self.max_set)
+        max1_strings = list()
+        max2_strings = list()
+
+        for i in self.w_t:
+            curr_dict = self.all_dicts[i]
+            for v in curr_dict.keys():
+                if curr_dict[v] == max_vals[0]:
+                    max1_strings.append(v)
+                if curr_dict[v] == max_vals[1]:
+                    max2_strings.append(v)
+
+        print '1st Maximum Values'
+        print max1_strings
+        print '2ns Maximum Values'
+        print max2_strings
+
+
 if __name__ == "__main__":
 
     # input file and create array
@@ -136,3 +159,4 @@ if __name__ == "__main__":
     k = Kernel(training_data)
     k.determine_w(test_data)
     k.perceptron_algo(test_data)
+    k.determine_max_values()
