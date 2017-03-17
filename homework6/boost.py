@@ -4,76 +4,181 @@
 # PID#: A10773459
 
 import numpy as np
+import math
 
 class boost:
 
     def __init__(self, train_data, string_dict):
         self.train_data = train_data
         self.string_dict = string_dict
-        self.sample_weights = np.zeros(shape=(len(self.train_data[:,0]), 1))
+        self.weights = np.zeros(shape=(len(self.train_data[:, 0]), 1))
+        self.class_list = []
 
-    def boost_algo(self):
-        pos_h_t = 100
-        neg_h_t = 100
-        min_pos_error = 1.0
-        min_neg_error = 1.0
         i = 0
-        j = 0
         init_weight = 1.0 / len(self.train_data[:, 0])
-        pos_e_t = 0.0
-        neg_e_t = 0.0
-        pos_alpha_t = 0.0
-        neg_alpha_t = 0.0
+        while i < len(self.weights[:, 0]):
+            self.weights[i, 0] = init_weight
+            i += 1
 
-        # iterating through all the words in the dictionary file
-        while j < len(self.string_dict[:, 0]):
-            # determine h_t
-            while i < len(self.train_data[:, 0]):
+    def boost_algorithm(self):
+        t = 0
+        ''' below are the chosen weak learner variables '''
+        h_t = 0
+        e_t = 0.0
 
-                # determining values for positive classifier
-                if (int(self.train_data[i, j]) == 1):
-                    pos_predict = 1
-                else:
-                    pos_predict = -1
-                # determine positive e_t
-                if (pos_predict != int(self.train_data[i, len(self.train_data[0, :]) - 1])):
-                    pos_e_t += init_weight
-
-                # determining  values for negative classifier
-                if (int(self.train_data[i, j]) == 0):
-                    neg_predict = 1
-                else:
-                    neg_predict = -1
-                # determining negative e_t
-                if (neg_predict != int(self.train_data[i, len(self.train_data[0,:]) - 1])):
-                    neg_e_t += init_weight
-
-                i += 1
-
-            #determine positive alpha
-            if pos_e_t < min_pos_error:
-                pos_h_t = j
-                min_pos_error = pos_e_t
-                pos_alpha_t = 0.5 * np.log((1.0 - pos_e_t) / pos_e_t)
-            # determine negative alpha
-            if neg_e_t < min_neg_error:
-                neg_h_t = j
-                min_neg_error = neg_e_t
-                neg_alpha_t = 0.5 * np.log((1.0 - neg_e_t) / neg_e_t)
-
-            # calculate D_t+1() for all sample points
-            neg_e_t = 0.0
-            pos_e_t = 0.0
+        while t < 4:
+            ''' need to reset all the values for each round of boosting '''
             i = 0
-            j += 1
-        print ('Positive h_t: ' + str(pos_h_t))
-        print ('Positive error: ' + str(min_pos_error))
-        print ('Negative h_t: ' + str(neg_h_t))
-        print ('Negative error: ' + str(min_neg_error))
+            j = 0
+            pos_e_t = 1.0
+            neg_e_t = 1.0
+            pos_h_t = 100
+            neg_h_t = 100
+            curr_pos_e_t = 0.0
+            curr_neg_e_t = 0.0
+            is_positive = False
+            h_t = 0
+            e_t = 0.0
+            ''' iterating through all the words in the dictionary file '''
+            while j < len(self.string_dict[:, 0]):
+                ''' determine best h_t(+) and h_t(-) '''
+                while i < len(self.train_data[:, 0]):
 
-    def final_classifier(self):
+                    ''' determining values for positive classifier '''
+                    if int(self.train_data[i, j]) == 1:
+                        pos_predict = 1
+                    else:
+                        pos_predict = -1
+                    if pos_predict != int(self.train_data[i, len(self.train_data[0, :]) - 1]):
+                        curr_pos_e_t += self.weights[i, 0]
+
+                    ''' determining values for negative classifier '''
+                    if int(self.train_data[i, j]) == 0:
+                        neg_predict = 1
+                    else:
+                        neg_predict = -1
+                    if neg_predict != int(self.train_data[i, len(self.train_data[0, :]) - 1]):
+                        curr_neg_e_t += self.weights[i, 0]
+
+                    i += 1
+                ''' determine best positive h_t '''
+                if curr_pos_e_t < pos_e_t:
+                    pos_h_t = j
+                    pos_e_t = curr_pos_e_t
+                    is_positive = True
+                ''' determine best negative h_t '''
+                if curr_neg_e_t < neg_e_t:
+                    neg_h_t = j
+                    neg_e_t = curr_neg_e_t
+                    is_positive = False
+
+                curr_neg_e_t = 0.0
+                curr_pos_e_t = 0.0
+                i = 0
+                j += 1
+
+            ''' choose between h_t(+) or h_t(-)'''
+            if pos_e_t < neg_e_t:
+                e_t = pos_e_t
+                h_t = pos_h_t
+                is_positive = True
+            else:
+                e_t = neg_e_t
+                h_t = neg_h_t
+                is_positive = False
+
+            self.determine_new_weights(h_t, e_t, is_positive)
+            t += 1
+
+    def determine_new_weights(self, h_t, e_t, is_positive):
+        alpha_t = 0.5 * np.log((1.0 - e_t) / e_t)
+        z_t = 0.0
+        predict = 0
+
+        i = 0
+        while i < len(self.weights[:, 0]):
+            if is_positive:
+                if int(self.train_data[i, h_t]) == 1:
+                    predict = 1
+                else:
+                    predict = -1
+            else:
+                if int(self.train_data[i, h_t]) == 0:
+                    predict = 1
+                else:
+                    predict = -1
+
+            val = self.weights[i, 0] * math.exp(-(alpha_t * predict * int(self.train_data[i, len(self.train_data[0, :]) - 1])))
+            self.weights[i, 0] = val
+            z_t += self.weights[i, 0]
+            i += 1
+
+        i = 0
+        while i < len(self.weights[:, 0]):
+            val = self.weights[i, 0] / z_t
+            self.weights[i, 0] = val
+            i += 1
+        ''' sanity check
+        x = 0
+        count = 0.0
+        while x < len(self.weights[:, 0]):
+            count += self.weights[x, 0]
+            x += 1
+        print ('Should be around 1: ' + str(count))
+        '''
+
+        self.add_classifier(alpha_t, h_t, is_positive)
+
+        print ('e_t: ' + str(e_t))
+        print ('alpha_t: ' + str(alpha_t))
+        print ('h_t: ' + str(h_t))
+        print ('z_t: ' + str(z_t))
+        print ('-------------------------------------')
+
+
+    def add_classifier(self, alpha_t, h_t, is_positive):
+        if is_positive:
+            row = [alpha_t, h_t, 1]
+        else:
+            row = [alpha_t, h_t, 0]
+        self.class_list.append(row)
+
+    def determine_classifier(self):
         # H(x) is the sign(summation alpha_t * h_t(x) from 1, ..., T)
-        print('just so it can compile')
+        i = 0
+        total_sum = 0.0
+        val = 0
+        predict = 0
+        total = 0
+        mistakes = 0
+        error = 0.0
+
+        while i < len(self.train_data[:, 0]):
+            for row in self.class_list:
+
+                if int(row[2]) == 1:
+                    if int(self.train_data[i, int(row[1])]) == 1:
+                        val = 1
+                    else:
+                        val = -1
+                else:
+                    if int(self.train_data[i, int(row[1])]) == 0:
+                        val = 1
+                    else:
+                        val = -1
+                total_sum += (row[0] * val)
+
+            if total_sum > 0.0:
+                predict = 1
+            else:
+                predict = -1
+            if predict != int(self.train_data[i, len(self.train_data[0, :]) - 1]):
+                mistakes += 1
+            total_sum = 0.0
+            total += 1
+            i += 1
+        error = (1.0 * mistakes) / (1.0 * total)
+        print ('Total Error: ' + str(error))
 
 if __name__ == "__main__":
     train_file = open('hw6train.txt', 'r')
@@ -89,4 +194,5 @@ if __name__ == "__main__":
     dict_file.close
 
     b = boost(train_data, string_dict)
-    b.boost_algo()
+    b.boost_algorithm()
+    b.determine_classifier()
