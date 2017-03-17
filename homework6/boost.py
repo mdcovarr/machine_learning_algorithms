@@ -8,9 +8,10 @@ import math
 
 class boost:
 
-    def __init__(self, train_data, string_dict):
+    def __init__(self, train_data, string_dict, test_data):
         self.train_data = train_data
         self.string_dict = string_dict
+        self.test_data = test_data
         self.weights = np.zeros(shape=(len(self.train_data[:, 0]), 1))
         self.class_list = []
 
@@ -26,8 +27,9 @@ class boost:
         h_t = 0
         e_t = 0.0
 
-        while t < 4:
+        while t < 20:
             ''' need to reset all the values for each round of boosting '''
+            print('Round ' + str(t+1))
             i = 0
             j = 0
             pos_e_t = 1.0
@@ -118,14 +120,6 @@ class boost:
             val = self.weights[i, 0] / z_t
             self.weights[i, 0] = val
             i += 1
-        ''' sanity check
-        x = 0
-        count = 0.0
-        while x < len(self.weights[:, 0]):
-            count += self.weights[x, 0]
-            x += 1
-        print ('Should be around 1: ' + str(count))
-        '''
 
         self.add_classifier(alpha_t, h_t, is_positive)
 
@@ -133,6 +127,7 @@ class boost:
         print ('alpha_t: ' + str(alpha_t))
         print ('h_t: ' + str(h_t))
         print ('z_t: ' + str(z_t))
+        self.determine_test_classifier()
         print ('-------------------------------------')
 
 
@@ -180,6 +175,43 @@ class boost:
         error = (1.0 * mistakes) / (1.0 * total)
         print ('Total Error: ' + str(error))
 
+    def determine_test_classifier(self):
+        # H(x) is the sign(summation alpha_t * h_t(x) from 1, ..., T)
+        i = 0
+        total_sum = 0.0
+        val = 0
+        predict = 0
+        total = 0
+        mistakes = 0
+        error = 0.0
+
+        while i < len(self.test_data[:, 0]):
+            for row in self.class_list:
+
+                if int(row[2]) == 1:
+                    if int(self.test_data[i, int(row[1])]) == 1:
+                        val = 1
+                    else:
+                        val = -1
+                else:
+                    if int(self.test_data[i, int(row[1])]) == 0:
+                        val = 1
+                    else:
+                        val = -1
+                total_sum += (row[0] * val)
+
+            if total_sum > 0.0:
+                predict = 1
+            else:
+                predict = -1
+            if predict != int(self.test_data[i, len(self.test_data[0, :]) - 1]):
+                mistakes += 1
+            total_sum = 0.0
+            total += 1
+            i += 1
+        error = (1.0 * mistakes) / (1.0 * total)
+        print ('Total Test Error: ' + str(error))
+
 if __name__ == "__main__":
     train_file = open('hw6train.txt', 'r')
     train_data = np.array([line.rstrip().split(" ") for line in train_file])
@@ -193,6 +225,5 @@ if __name__ == "__main__":
     string_dict = np.array([line.rstrip().split(" ") for line in dict_file])
     dict_file.close
 
-    b = boost(train_data, string_dict)
+    b = boost(train_data, string_dict, test_data)
     b.boost_algorithm()
-    b.determine_classifier()
