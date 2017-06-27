@@ -1,8 +1,3 @@
-// Michael Covarrubias
-// PID#: A12409694
-// Naveen Ketagoda
-// PID#: A10773459
-
 import java.io.*;
 import java.util.*;
 import java.lang.Math;
